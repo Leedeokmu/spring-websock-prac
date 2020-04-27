@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: local
+    active: alpha
   devtools:
     livereload:
       enabled: true
@@ -8,3 +8,6 @@ spring:
       enabled: false
   freemarker:
     cache: false
+
+#server:
+#  port: 8081

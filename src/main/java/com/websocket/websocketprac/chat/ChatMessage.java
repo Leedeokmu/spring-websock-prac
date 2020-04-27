@@ -6,8 +6,7 @@ import lombok.Setter;
 import java.io.Serializable;
 
 @Getter @Setter
-public class ChatMessage implements Serializable {
-    private static final long serialVersionUID = 649467835489606639L;
+public class ChatMessage  {
 
     // 메시지 타입 : 입장, 채팅
     public enum MessageType {
