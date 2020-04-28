@@ -1,8 +1,11 @@
 package com.websocket.websocketprac.chat;
 
-import com.websocket.websocketprac.pubsub.RedisPublisher;
+import com.websocket.websocketprac.service.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 
@@ -10,15 +13,23 @@ import org.springframework.stereotype.Controller;
 @RequiredArgsConstructor
 @Controller
 public class ChatController {
-    private final ChatRoomRepository chatRoomRepository;
-    private final RedisPublisher redisPublisher;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final RedisTemplate redisTemplate;
+    private final ChannelTopic channelTopic;
 
     @MessageMapping("/chat/message")
-    public void message(ChatMessage message) {
+    public void message(
+            ChatMessage message,
+            @Header(name = "token") String token
+    ) {
+        // 토큰에서 사용자명 불러옴
+        String nickname = jwtTokenProvider.getUserNameFromJwt(token);
+
+        message.setSender(nickname);
         if (ChatMessage.MessageType.ENTER.equals(message.getType())) {
-            chatRoomRepository.enterChatRoom(message.getRoomId());
-            message.setMessage(message.getSender() + "님이 입장하셨습니다.");
+            message.setSender("[알림]");
+            message.setMessage(nickname + "님이 입장하셨습니다.");
         }
-        redisPublisher.publish(chatRoomRepository.getTopic(message.getRoomId()), message);
+        redisTemplate.convertAndSend(channelTopic.getTopic(), message);
     }
 }

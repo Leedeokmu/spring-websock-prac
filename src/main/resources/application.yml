@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: alpha
+    active: local
   devtools:
     livereload:
       enabled: true
@@ -9,5 +9,7 @@ spring:
   freemarker:
     cache: false
 
+  jwt:
+    secret: govlepel@$&
 #server:
 #  port: 8081
