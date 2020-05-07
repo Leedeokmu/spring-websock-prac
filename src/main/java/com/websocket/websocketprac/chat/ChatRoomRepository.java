@@ -6,6 +6,7 @@ import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Repository;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,8 +19,11 @@ public class ChatRoomRepository {
     private static final String USER_COUNT = "USER_COUNT";
     private static final String ENTER_INFO = "ENTER_INFO";
 
+    @Resource(name = "redisTemplate")
     private HashOperations<String, String, ChatRoom> hashOpsChatRoom;
+    @Resource(name = "redisTemplate")
     private HashOperations<String, String, String> hashOpsEnterInfo;
+    @Resource(name = "redisTemplate")
     private ValueOperations<String, String> valueOps;
 
     // 모든 채팅방 조회
