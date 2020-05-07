@@ -53,7 +53,7 @@
         },
         methods: {
             findAllRoom: function() {
-                axios.get('/chat/rooms').then(response = > {
+                axios.get('/chat/rooms').then(response => {
                     // prevent html, allow json array
                     if(Object.prototype.toString.call(response.data) === "[object Array]"
             )
