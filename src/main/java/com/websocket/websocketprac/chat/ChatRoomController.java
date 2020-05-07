@@ -28,7 +28,14 @@ public class ChatRoomController {
     @GetMapping("/rooms")
     @ResponseBody
     public List<ChatRoom> room() {
-        return chatRoomRepository.findAllRoom();
+        List<ChatRoom> allRoom = chatRoomRepository.findAllRoom();
+
+        for (ChatRoom room : allRoom) {
+            long userCount = chatRoomRepository.getUserCount(room.getRoomId());
+            room.setUserCount(userCount);
+        }
+        return allRoom;
+
     }
 
     // 채팅방 생성

@@ -3,8 +3,6 @@ package com.websocket.websocketprac.chat;
 import com.websocket.websocketprac.service.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
@@ -14,8 +12,9 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class ChatController {
     private final JwtTokenProvider jwtTokenProvider;
-    private final RedisTemplate redisTemplate;
-    private final ChannelTopic channelTopic;
+    private final ChatService chatService;
+    private final ChatRoomRepository chatRoomRepository;
+
 
     @MessageMapping("/chat/message")
     public void message(
@@ -26,10 +25,7 @@ public class ChatController {
         String nickname = jwtTokenProvider.getUserNameFromJwt(token);
 
         message.setSender(nickname);
-        if (ChatMessage.MessageType.ENTER.equals(message.getType())) {
-            message.setSender("[알림]");
-            message.setMessage(nickname + "님이 입장하셨습니다.");
-        }
-        redisTemplate.convertAndSend(channelTopic.getTopic(), message);
+        message.setUserCount(chatRoomRepository.getUserCount(message.getRoomId()));
+        chatService.sendChatMessage(message);
     }
 }
